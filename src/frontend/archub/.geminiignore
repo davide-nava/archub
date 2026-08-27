@@ -1,0 +1,61 @@
+# ==========================================================================
+# Google Antigravity Agent Ignore Configuration (.geminiignore)
+# Specifies files and directories excluded from AI agent context & search
+# ==========================================================================
+
+# Dependencies & Package Managers
+node_modules/
+package-lock.json
+
+# Compilation & Build Outputs
+dist/
+out-tsc/
+bazel-out/
+.angular/
+.sass-cache/
+
+# Test Coverage & Artifacts
+coverage/
+.nyc_output/
+test-results/
+__screenshots__/
+*.lcov
+
+# Logs & Runtime Dumps
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Environment & Sensitive Credentials
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.cert
+*.crt
+
+# IDE & Editor Metadata
+.idea/
+.project
+.classpath
+.settings/
+*.sublime-workspace
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/mcp.json
+.history/
+
+# Operating System Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db

@@ -1,0 +1,58 @@
+# ==============================================================================
+# Antigravity CLI & AI Agent Ignore File (.agyignore / .geminiignore)
+# ==============================================================================
+
+# Dependencies, Tooling & Package Managers
+.dart_tool/
+.pub-cache/
+.pub/
+.flutter-plugins
+.flutter-plugins-dependencies
+node_modules/
+
+# Build Outputs & Generated Artifacts
+build/
+coverage/
+doc/api/
+*.log
+*.symbols
+*.map.json
+
+# Platform Build Folders & Native Dependencies
+android/.gradle/
+android/app/build/
+android/app/debug/
+android/app/profile/
+android/app/release/
+ios/Pods/
+ios/.symlinks/
+ios/Flutter/.last_build_id
+ios/Flutter/Generated.xcconfig
+linux/flutter/ephemeral/
+macos/Flutter/ephemeral/
+windows/flutter/ephemeral/
+
+# IDE & Editor Configs
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+
+# System & OS Files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+desktop.ini
+
+# Secrets, Keystores & Environment Files
+.env*
+*.key
+*.keystore
+*.jks
+*.p12
+*.mobileprovision
+
+# Widget Preview & Diagnostics
+.widget_preview/
+migrate_working_dir/

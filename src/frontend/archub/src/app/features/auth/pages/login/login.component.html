@@ -1,0 +1,88 @@
+<div class="login-wrapper">
+  <div class="login-card">
+    <header class="login-header">
+      <div class="brand-badge">
+        <svg class="brand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+        </svg>
+        <span class="brand-name">ArcHub</span>
+      </div>
+      <h1 class="login-title">Enterprise Portal Sign-In</h1>
+      <p class="login-subtitle">Authenticate via Sanctum Bearer session to continue</p>
+    </header>
+
+    @if (errorMessage(); as err) {
+      <div class="alert alert-danger" role="alert" aria-live="assertive">
+        <svg class="alert-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-5a.75.75 0 01.75.75v4.5a.75.75 0 01-1.5 0v-4.5A.75.75 0 0110 5zm0 10a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
+        </svg>
+        <span>{{ err }}</span>
+      </div>
+    }
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form" novalidate>
+      <!-- Email input -->
+      <div class="form-group">
+        <label for="login-email" class="form-label">Corporate Email</label>
+        <input
+          type="email"
+          id="login-email"
+          formControlName="email"
+          class="form-input"
+          [class.input-invalid]="loginForm.controls.email.invalid && loginForm.controls.email.touched"
+          placeholder="name@archub.internal"
+          autocomplete="email"
+          required
+        />
+        @if (loginForm.controls.email.invalid && loginForm.controls.email.touched) {
+          <span class="form-error">Please enter a valid corporate email address.</span>
+        }
+      </div>
+
+      <!-- Password input -->
+      <div class="form-group">
+        <label for="login-password" class="form-label">Password</label>
+        <input
+          type="password"
+          id="login-password"
+          formControlName="password"
+          class="form-input"
+          [class.input-invalid]="loginForm.controls.password.invalid && loginForm.controls.password.touched"
+          placeholder="••••••••"
+          autocomplete="current-password"
+          required
+        />
+        @if (loginForm.controls.password.invalid && loginForm.controls.password.touched) {
+          <span class="form-error">Password is required (minimum 6 characters).</span>
+        }
+      </div>
+
+      <!-- Remember me -->
+      <div class="form-options">
+        <label class="checkbox-label" for="login-remember">
+          <input
+            type="checkbox"
+            id="login-remember"
+            formControlName="remember"
+            class="form-checkbox"
+          />
+          <span>Remember this session</span>
+        </label>
+      </div>
+
+      <!-- Submit button -->
+      <button
+        type="submit"
+        class="btn btn-primary btn-block"
+        [disabled]="isLoading()"
+        aria-label="Sign into ArcHub Portal"
+      >
+        @if (isLoading()) {
+          <span>Authenticating...</span>
+        } @else {
+          <span>Sign In</span>
+        }
+      </button>
+    </form>
+  </div>
+</div>

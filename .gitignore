@@ -1,0 +1,123 @@
+# ==============================================================================
+# Git Ignore Configuration (.gitignore)
+# ==============================================================================
+
+# Dependencies
+**/node_modules/
+**/vendor/
+**/.dart_tool/
+**/.pub-cache/
+**/.pub/
+**/.flutter-plugins
+**/.flutter-plugins-dependencies
+
+# Build Outputs & Compilation
+**/dist/
+**/build/
+**/out-tsc/
+**/bazel-out/
+**/.angular/cache/
+**/.sass-cache/
+**/tmp/
+
+# Laravel Storage & Framework Cache
+**/storage/*.key
+**/storage/pail
+**/bootstrap/cache/packages.php
+**/bootstrap/cache/services.php
+**/public/build/
+**/public/hot
+**/public/storage
+_ide_helper.php
+Homestead.json
+Homestead.yaml
+
+# Native Mobile Platform Builds
+**/android/.gradle/
+**/android/app/build/
+**/android/app/debug/
+**/android/app/profile/
+**/android/app/release/
+**/ios/Pods/
+**/ios/.symlinks/
+**/ios/Flutter/.last_build_id
+**/windows/flutter/ephemeral/
+**/linux/flutter/ephemeral/
+**/macos/Flutter/ephemeral/
+.widget_preview/
+migrate_working_dir/
+
+# Databases & SQLite
+**/*.sqlite
+**/*.sqlite-wal
+**/*.sqlite-shm
+**/database.sqlite
+
+# Test Coverage & Artifacts
+**/coverage/
+**/.nyc_output/
+**/test-results/
+**/__screenshots__/
+**/*.lcov
+**/.phpunit.cache/
+**/.phpunit.result.cache
+
+# Logs & Runtime Dumps
+**/*.log
+**/npm-debug.log*
+**/yarn-debug.log*
+**/yarn-error.log*
+**/pnpm-debug.log*
+**/testem.log
+**/libpeerconnection.log
+
+# Environment & Sensitive Credentials
+**/.env
+**/.env.*
+!**/.env.example
+**/auth.json
+**/*.key
+**/*.keystore
+**/*.jks
+**/*.pem
+**/*.cert
+**/*.crt
+
+# IDE & Editor Configurations
+.idea/
+.fleet/
+.zed/
+.cursor/
+.codex/
+.nova/
+.history/
+.project
+.classpath
+.c9/
+.settings/
+*.launch
+*.sublime-workspace
+*.iml
+*.ipr
+*.iws
+*.suo
+*.user
+*.useroscan
+*.sln.docstates
+
+# VS Code (preserve team config)
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/mcp.json
+
+# Operating System Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db

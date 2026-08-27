@@ -1,0 +1,60 @@
+<header class="app-navbar" role="banner">
+  <div class="navbar-container">
+    <!-- Brand / Logo -->
+    <div class="brand-group">
+      <a routerLink="/attendance" class="brand-link" aria-label="ArcHub Enterprise Home">
+        <svg class="brand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+        </svg>
+        <span class="brand-text">ArcHub</span>
+      </a>
+
+      <!-- Navigation links (when authenticated) -->
+      @if (authService.isAuthenticated()) {
+        <nav class="nav-links" aria-label="Main Navigation">
+          <a
+            routerLink="/attendance"
+            routerLinkActive="active"
+            [routerLinkActiveOptions]="{ exact: false }"
+            class="nav-link"
+          >
+            Attendance
+          </a>
+        </nav>
+      }
+    </div>
+
+    <!-- User Profile & Session Controls -->
+    <div class="user-session">
+      @if (authService.isAuthenticated()) {
+        @if (authService.currentUser(); as user) {
+          <div class="user-badge">
+            <div class="avatar" aria-hidden="true">
+              {{ user.name.substring(0, 1).toUpperCase() }}
+            </div>
+            <div class="user-info">
+              <span class="user-name">{{ user.name }}</span>
+              <span class="user-role">{{ user.role | uppercase }}</span>
+            </div>
+          </div>
+        }
+
+        <button
+          type="button"
+          class="btn-logout"
+          (click)="onLogout()"
+          aria-label="Sign Out"
+          title="Sign out of current session"
+        >
+          <svg class="logout-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path fill-rule="evenodd" d="M3 4.25A2.25 2.25 0 015.25 2h5.5A2.25 2.25 0 0113 4.25v2a.75.75 0 01-1.5 0v-2a.75.75 0 00-.75-.75h-5.5a.75.75 0 00-.75.75v11.5c0 .414.336.75.75.75h5.5a.75.75 0 00.75-.75v-2a.75.75 0 011.5 0v2A2.25 2.25 0 0110.75 18h-5.5A2.25 2.25 0 013 15.75V4.25z" clip-rule="evenodd" />
+            <path fill-rule="evenodd" d="M19 10a.75.75 0 00-.75-.75H8.704l2.47-2.47a.75.75 0 10-1.06-1.06l-3.75 3.75a.75.75 0 000 1.06l3.75 3.75a.75.75 0 101.06-1.06l-2.47-2.47H18.25A.75.75 0 0019 10z" clip-rule="evenodd" />
+          </svg>
+          <span class="logout-text">Sign Out</span>
+        </button>
+      } @else {
+        <a routerLink="/auth/login" class="btn-signin">Sign In</a>
+      }
+    </div>
+  </div>
+</header>

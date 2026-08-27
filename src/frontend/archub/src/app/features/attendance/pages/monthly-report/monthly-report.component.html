@@ -1,0 +1,362 @@
+<div class="attendance-container">
+  <!-- Page Header -->
+  <header class="page-header">
+    <div class="header-main">
+      <div class="header-titles">
+        <h1 class="page-title">Monthly Attendance Report</h1>
+        <p class="page-description">
+          Detailed timesheet, punch records, work duration metrics, and anomaly detection.
+        </p>
+      </div>
+
+      <!-- Quick Time Clock Punch Bar -->
+      <div class="quick-punch-actions" role="toolbar" aria-label="Time clock quick actions">
+        <button
+          type="button"
+          class="btn btn-punch-in"
+          [disabled]="isPunching() || isLoading()"
+          (click)="recordQuickPunch('in')"
+          aria-label="Clock In"
+        >
+          <svg class="btn-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm.75-11.25a.75.75 0 00-1.5 0v2.5h-2.5a.75.75 0 000 1.5h2.5v2.5a.75.75 0 001.5 0v-2.5h2.5a.75.75 0 000-1.5h-2.5v-2.5z" clip-rule="evenodd" />
+          </svg>
+          Clock In
+        </button>
+
+        <button
+          type="button"
+          class="btn btn-punch-out"
+          [disabled]="isPunching() || isLoading()"
+          (click)="recordQuickPunch('out')"
+          aria-label="Clock Out"
+        >
+          <svg class="btn-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path fill-rule="evenodd" d="M3 10a.75.75 0 01.75-.75h10.638L10.23 5.29a.75.75 0 111.04-1.08l5.5 5.25a.75.75 0 010 1.08l-5.5 5.25a.75.75 0 11-1.04-1.08l4.158-3.96H3.75A.75.75 0 013 10z" clip-rule="evenodd" />
+          </svg>
+          Clock Out
+        </button>
+
+        <button
+          type="button"
+          class="btn btn-punch-break"
+          [disabled]="isPunching() || isLoading()"
+          (click)="recordQuickPunch('break_start')"
+          aria-label="Break Start"
+        >
+          Break
+        </button>
+      </div>
+    </div>
+
+    <!-- Alert Notifications -->
+    @if (successMessage(); as msg) {
+      <div class="alert alert-success" role="alert" aria-live="polite">
+        <svg class="alert-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+        </svg>
+        <span>{{ msg }}</span>
+      </div>
+    }
+
+    @if (errorMessage(); as err) {
+      <div class="alert alert-danger" role="alert" aria-live="assertive">
+        <svg class="alert-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-5a.75.75 0 01.75.75v4.5a.75.75 0 01-1.5 0v-4.5A.75.75 0 0110 5zm0 10a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
+        </svg>
+        <span>{{ err }}</span>
+      </div>
+    }
+  </header>
+
+  <!-- Filter Bar -->
+  <section class="filter-section" aria-labelledby="filter-heading">
+    <h2 id="filter-heading" class="sr-only">Report Filters</h2>
+    <form [formGroup]="filterForm" (ngSubmit)="onApplyFilter()" class="filter-form">
+      <div class="filter-controls">
+        <!-- Year Selector -->
+        <div class="form-group">
+          <label for="filter-year" class="form-label">Year</label>
+          <select
+            id="filter-year"
+            formControlName="year"
+            class="form-select"
+            aria-label="Select report year"
+          >
+            @for (year of yearOptions(); track year) {
+              <option [value]="year">{{ year }}</option>
+            }
+          </select>
+        </div>
+
+        <!-- Month Selector -->
+        <div class="form-group">
+          <label for="filter-month" class="form-label">Month</label>
+          <select
+            id="filter-month"
+            formControlName="month"
+            class="form-select"
+            aria-label="Select report month"
+          >
+            @for (month of monthOptions(); track month.value) {
+              <option [value]="month.value">{{ month.label }}</option>
+            }
+          </select>
+        </div>
+
+        <!-- Only Anomalies Toggle -->
+        <div class="form-group form-group-checkbox">
+          <label class="checkbox-label" for="filter-anomalies">
+            <input
+              type="checkbox"
+              id="filter-anomalies"
+              formControlName="onlyAnomalies"
+              class="form-checkbox"
+              (change)="onToggleAnomaliesOnly($event)"
+            />
+            <span class="checkbox-custom"></span>
+            <span class="checkbox-text">Show anomalies only</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="filter-actions">
+        <button
+          type="submit"
+          class="btn btn-primary"
+          [disabled]="isLoading()"
+          aria-label="Apply filter criteria"
+        >
+          <svg class="btn-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path fill-rule="evenodd" d="M2.628 1.601C5.028 1.206 7.49 1 10 1s4.973.206 7.372.601a.75.75 0 01.628.74v2.288a2.25 2.25 0 01-.659 1.59l-4.682 4.683a2.25 2.25 0 00-.659 1.59v3.037c0 .684-.31 1.33-.844 1.757l-1.937 1.55A.75.75 0 018 18.25v-5.757a2.25 2.25 0 00-.659-1.591L2.659 6.22A2.25 2.25 0 012 4.629V2.34a.75.75 0 01.628-.74z" clip-rule="evenodd" />
+          </svg>
+          Filter
+        </button>
+
+        <button
+          type="button"
+          class="btn btn-secondary"
+          [disabled]="isLoading()"
+          (click)="onResetFilter()"
+          aria-label="Reset filters to default"
+        >
+          Reset
+        </button>
+      </div>
+    </form>
+  </section>
+
+  <!-- KPI Summary Cards -->
+  @if (summary(); as s) {
+    <section class="kpi-grid" aria-label="Attendance key performance indicators">
+      <!-- Total Worked Hours -->
+      <app-kpi-card
+        title="Total Worked Hours"
+        [value]="s.totalWorkedHours + 'h'"
+        [subtitle]="workedHoursProgress()"
+        tone="primary"
+        badge="Actual"
+      />
+
+      <!-- Overtime Hours -->
+      <app-kpi-card
+        title="Overtime"
+        [value]="overtimeFormatted()"
+        [subtitle]="'Net Balance: ' + balanceFormatted()"
+        [tone]="s.totalOvertimeHours > 0 ? 'success' : 'default'"
+        [badge]="s.totalBalanceHours >= 0 ? 'Surplus' : 'Deficit'"
+      />
+
+      <!-- Anomalies Count -->
+      <app-kpi-card
+        title="Anomalies Count"
+        [value]="s.anomaliesCount"
+        [subtitle]="s.anomaliesCount === 0 ? 'All records compliant' : 'Requires attention or review'"
+        [tone]="s.anomaliesCount > 0 ? 'danger' : 'success'"
+        [badge]="s.anomaliesCount > 0 ? 'Action Needed' : 'Clean'"
+      />
+
+      <!-- Working Days -->
+      <app-kpi-card
+        title="Working Days"
+        [value]="workingDaysRatio()"
+        [subtitle]="s.absentDays + ' absent, ' + s.leaveDays + ' leave'"
+        tone="default"
+        badge="Presence"
+      />
+    </section>
+  }
+
+  <!-- Timesheet Table Section -->
+  <section class="timesheet-section" aria-labelledby="timesheet-heading">
+    <div class="timesheet-header">
+      <div class="timesheet-title-group">
+        <h2 id="timesheet-heading" class="section-title">Daily Timesheet Records</h2>
+        @if (reportData(); as r) {
+          <span class="badge-period">{{ r.monthName }} {{ r.year }}</span>
+        }
+      </div>
+
+      <div class="timesheet-meta">
+        @if (reportData(); as r) {
+          <span class="employee-tag">
+            <span class="employee-name">{{ r.employeeName }}</span>
+            @if (r.department) {
+              <span class="employee-dept">({{ r.department }})</span>
+            }
+          </span>
+        }
+      </div>
+    </div>
+
+    <!-- Table Container -->
+    <div class="table-responsive" tabindex="0" role="region" aria-label="Attendance daily records scrollable table">
+      <table class="attendance-table">
+        <caption class="sr-only">Daily attendance punches and worked hours for the selected month</caption>
+        <thead>
+          <tr>
+            <th scope="col" class="col-date">Date</th>
+            <th scope="col" class="col-status">Status</th>
+            <th scope="col" class="col-hours">Expected</th>
+            <th scope="col" class="col-hours">Worked</th>
+            <th scope="col" class="col-hours">Balance</th>
+            <th scope="col" class="col-punches">Clock Punches</th>
+            <th scope="col" class="col-anomalies">Anomalies & Notes</th>
+            <th scope="col" class="col-actions">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (day of displayedDays(); track day.date) {
+            <tr
+              class="table-row"
+              [class.row-anomaly]="day.hasAnomalies"
+              [class.row-weekend]="day.isWeekend"
+              [class.row-holiday]="day.isHoliday"
+            >
+              <!-- Date & Day -->
+              <td class="col-date">
+                <div class="date-cell">
+                  <span class="day-number">{{ day.dayNumber }}</span>
+                  <div class="date-details">
+                    <span class="day-name">{{ day.dayOfWeek }}</span>
+                    <span class="day-date">{{ day.date }}</span>
+                  </div>
+                </div>
+              </td>
+
+              <!-- Status Badge -->
+              <td class="col-status">
+                <span
+                  class="status-pill"
+                  [class.status-present]="day.status === 'present'"
+                  [class.status-absent]="day.status === 'absent'"
+                  [class.status-leave]="day.status === 'leave'"
+                  [class.status-holiday]="day.status === 'holiday'"
+                  [class.status-incomplete]="day.status === 'incomplete'"
+                >
+                  @switch (day.status) {
+                    @case ('present') { Present }
+                    @case ('absent') { Absent }
+                    @case ('leave') { On Leave }
+                    @case ('holiday') { Holiday }
+                    @case ('incomplete') { Incomplete }
+                    @default { {{ day.status }} }
+                  }
+                </span>
+              </td>
+
+              <!-- Expected Hours -->
+              <td class="col-hours">
+                <span class="hours-val">{{ day.expectedHours.toFixed(1) }}h</span>
+              </td>
+
+              <!-- Worked Hours -->
+              <td class="col-hours">
+                <span
+                  class="hours-val font-bold"
+                  [class.text-overtime]="day.workedHours > day.expectedHours"
+                  [class.text-short]="day.workedHours < day.expectedHours && day.expectedHours > 0"
+                >
+                  {{ day.workedHours.toFixed(1) }}h
+                </span>
+              </td>
+
+              <!-- Balance / Overtime -->
+              <td class="col-hours">
+                <span
+                  class="balance-tag"
+                  [class.balance-positive]="day.balanceHours > 0"
+                  [class.balance-negative]="day.balanceHours < 0"
+                  [class.balance-zero]="day.balanceHours === 0"
+                >
+                  {{ day.balanceHours > 0 ? '+' : '' }}{{ day.balanceHours.toFixed(1) }}h
+                </span>
+              </td>
+
+              <!-- Punches Sequence -->
+              <td class="col-punches">
+                <div class="punch-sequence">
+                  @for (punch of day.punches; track punch.id) {
+                    <app-punch-badge [punch]="punch" />
+                  } @empty {
+                    <span class="empty-punches-text">
+                      {{ day.isWeekend ? 'Weekend' : day.isHoliday ? (day.holidayName || 'Holiday') : 'No clock entries' }}
+                    </span>
+                  }
+                </div>
+              </td>
+
+              <!-- Anomalies & Notes -->
+              <td class="col-anomalies">
+                <div class="anomalies-container">
+                  @for (anomaly of day.anomalies; track anomaly.code) {
+                    <app-anomaly-badge [anomaly]="anomaly" />
+                  }
+
+                  @if (day.note && day.anomalies.length === 0) {
+                    <span class="day-note">{{ day.note }}</span>
+                  }
+                </div>
+              </td>
+
+              <!-- Actions -->
+              <td class="col-actions">
+                @if (day.hasAnomalies) {
+                  <button
+                    type="button"
+                    class="btn btn-resolve"
+                    (click)="resolveAnomaly(day, day.anomalies[0].code)"
+                    title="Submit resolution / justification"
+                    aria-label="Resolve anomaly"
+                  >
+                    Resolve
+                  </button>
+                } @else {
+                  <span class="compliant-check" title="Compliant record" aria-label="Compliant">
+                    <svg class="check-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                      <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" />
+                    </svg>
+                  </span>
+                }
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="8" class="empty-table-cell">
+                <div class="empty-state">
+                  <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                  <p class="empty-title">No attendance records found</p>
+                  <p class="empty-subtitle">
+                    {{ activeFilter().onlyAnomalies ? 'No anomalies detected for this month period.' : 'No punch data recorded for this selection.' }}
+                  </p>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>

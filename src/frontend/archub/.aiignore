@@ -1,0 +1,19 @@
+# ==========================================================================
+# AI Agent Context Ignore Rules (.aiignore)
+# ==========================================================================
+
+node_modules/
+package-lock.json
+dist/
+out-tsc/
+.angular/
+coverage/
+*.log
+.env
+.env.*
+!.env.example
+.idea/
+.vscode/*
+!.vscode/settings.json
+.DS_Store
+Thumbs.db

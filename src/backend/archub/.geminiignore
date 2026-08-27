@@ -1,0 +1,41 @@
+# Dependencies
+/vendor/
+/node_modules/
+
+# Environment & Credentials
+.env
+.env.*
+!.env.example
+auth.json
+*.key
+
+# Laravel Storage & Framework Cache
+/storage/
+/bootstrap/cache/
+/database/database.sqlite*
+*.sqlite
+*.sqlite-wal
+*.sqlite-shm
+
+# Build Artifacts
+/public/build/
+/public/hot
+/public/storage
+
+# IDE & Editor files
+/.idea/
+/.vscode/
+/.fleet/
+/.zed/
+/.cursor/
+*.suo
+*.user
+*.useroscan
+*.sln.docstates
+
+# Logs & Temporary Files
+*.log
+.DS_Store
+Thumbs.db
+.phpunit.cache/
+.phpunit.result.cache
